@@ -8,7 +8,13 @@ const app = express();
 const expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
 
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ limit: '10mb', extended: false }));
+
+// Routers
 const indexRouter = require('./routes/index');
+const authorRouter = require('./routes/authors');
 
 // Settings
 app.set('view engine', 'ejs');
@@ -19,7 +25,8 @@ app.use(express.static('public'));
 
 // Database Connection
 mongoose.connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 });
 const db = mongoose.connection;
 db.on('error', error => console.log(error));
@@ -28,6 +35,7 @@ db.once('open', () => console.log('Connected To Mongoose'));
 
 // Routes
 app.use('/', indexRouter);
+app.use('/authors', authorRouter);
 
 // Server Initialization
 app.listen(process.env.PORT || 3000);
